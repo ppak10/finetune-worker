@@ -1,0 +1,52 @@
+services:
+  ubuntu_22.04:
+    container_name: finetune-worker-ubuntu_22.04
+    build:
+      context: ../../services/ubuntu_22.04
+    env_file:
+      - .env
+    environment:
+      - ENVIRONMENT=development
+    volumes:
+      - ../../api:/home/api
+      - ../../app:/home/app
+      - ../../services/ubuntu_22.04:/home/ubuntu
+
+      - venv:/home/app/venv
+    networks:
+      - worker-net
+    ports:
+      - "${FLASK_PORT}:${FLASK_PORT}"
+    tty: true
+  
+  redis:
+    container_name: finetune-redis
+    image: redis:8.0-M03
+    networks:
+      - worker-net
+
+#############
+# Dev Tools #
+#############
+
+  redisinsight:
+    container_name: finetune-redisinsight
+    image: redislabs/redisinsight:latest
+    ports:
+      - 5540:5540
+    volumes:
+      - redisinsight:/data
+    networks:
+      - worker-net
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
+
+volumes:
+  venv:
+
+  # devtools
+  redisinsight:
+
+networks:
+  worker-net:
+    driver: bridge    
