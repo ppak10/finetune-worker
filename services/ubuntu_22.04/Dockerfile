@@ -20,6 +20,9 @@ RUN apt install -y python3.10 python3.10-venv python3-pip
 # Create Virutal Environment for both api and app in home directory
 RUN python3.10 -m venv venv
 
+# Install requirements for client
+RUN . venv/bin/activate && pip install aiohttp
+
 #############################
 # Entrypoint Initialization #
 #############################
