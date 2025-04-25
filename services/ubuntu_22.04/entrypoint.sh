@@ -2,12 +2,8 @@
 
 . venv/bin/activate
 
-# Install api dependencies
-echo "Installing api requirements"
-pip install -r api/requirements.txt
-
 # Install app dependencies
-echo "Installing app requirements"
-pip install -r app/requirements.txt
+# echo "Installing app requirements"
+# pip install -r requirements.txt
 
-python api/polling.py
+python -m app.client.start_services

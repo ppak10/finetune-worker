@@ -8,15 +8,13 @@ services:
     environment:
       - ENVIRONMENT=development
     volumes:
-      - ../../api:/home/api
       - ../../app:/home/app
       - ../../services/ubuntu_22.04:/home/ubuntu
 
-      - venv:/home/app/venv
+      # - venv:/home/venv
     networks:
       - worker-net
-    # ports:
-    #   - "${FLASK_PORT}:${FLASK_PORT}"
+
     tty: true
   
   redis:
@@ -42,7 +40,7 @@ services:
     #   - "host.docker.internal:host-gateway"
 
 volumes:
-  venv:
+  # venv:
 
   # devtools
   redisinsight:
