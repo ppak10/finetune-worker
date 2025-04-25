@@ -15,7 +15,7 @@ def multiply(x, y):
     return x * y
 
 @celery.task
-def subtract(x, y):
+def subtract(x, y, *args: int, **kwargs):
     """
     subtracts two numbers
     """
@@ -23,6 +23,13 @@ def subtract(x, y):
 
 @celery.task
 def divide(x, y):
+    """
+    divides two numbers
+    """
+    return x / y
+
+@celery.task
+def divide_all(x, y):
     """
     divides two numbers
     """
