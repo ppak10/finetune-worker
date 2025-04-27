@@ -38,7 +38,7 @@ USER finetune-worker
 RUN python3.10 -m venv venv
 
 # Install requirements for client
-RUN . venv/bin/activate && pip install aiohttp celery redis watchdog
+RUN . venv/bin/activate && pip install aiohttp celery redis watchdog websockets
 
 ##############
 # Entrypoint #

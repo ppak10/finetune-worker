@@ -18,7 +18,7 @@ services:
     tty: true
   
   redis:
-    container_name: finetune-redis
+    container_name: finetune-worker-redis
     image: redis:8.0-M03
     networks:
       - worker-net
@@ -28,7 +28,7 @@ services:
 #############
 
   redisinsight:
-    container_name: finetune-redisinsight
+    container_name: finetune-worker-redisinsight
     image: redislabs/redisinsight:latest
     ports:
       - 5540:5540
