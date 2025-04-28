@@ -27,7 +27,7 @@ class RestartOnChangeHandler(FileSystemEventHandler):
 
 def start_worker_subprocess():
     return subprocess.Popen(
-        [sys.executable, "-m", "app.client.event_listener.app"],
+        [sys.executable, "-m", "app.client.stream.sse"],
     )
 
 def start_celery_worker():

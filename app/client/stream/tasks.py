@@ -5,12 +5,12 @@ from typing import get_type_hints, Any
 from celery.app.task import Task
 
 # Import your tasks module
-tasks_module = importlib.import_module("app.tasks")
+tools_module = importlib.import_module("app.tools")
 
 # Collect all Celery tasks
 celery_tasks = {
     name: obj
-    for name, obj in vars(tasks_module).items()
+    for name, obj in vars(tools_module).items()
     if isinstance(obj, Task)
 }
 
@@ -44,7 +44,7 @@ for name, task in celery_tasks.items():
     args_info, return_type = get_task_args_and_kwargs(task.run)
     docstring = get_task_docstring(task.run)
 
-    print(f"🔧 Task: {name}")
+    print(f"🔧 Tool: {name}")
     
     if docstring:
         print(f"📘 Description: {docstring.strip()}")

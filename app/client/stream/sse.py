@@ -4,11 +4,12 @@ import json
 import os
 
 # Applies prepended print statement.
-from app.client.event_listener.tasks import run_task_by_name
-from app.client.event_listener.utils import *
+from app.client.stream.tasks import run_task_by_name
+from app.client.stream.utils import *
+from app.client.stream.ws import open_websocket_connection
 
 async def respond_to_ping(worker_id, worker_token):
-    url = f"https://host.docker.internal:8000/v1/worker_event/{worker_id}/ping/"
+    url = f"https://{os.environ.get('DJANGO_HOST')}/v1/worker_event/{worker_id}/ping/"
     headers = {
         "Authorization": f"Worker {worker_token}",
         "Content-Type": "application/json",
@@ -22,8 +23,9 @@ async def respond_to_ping(worker_id, worker_token):
         except Exception as e:
             print(f"Ping response error: {e}")
 
+
 async def listen_for_events(worker_id, worker_token):
-    url = f"https://host.docker.internal:8000/v1/worker_event/{worker_id}/"
+    url = f"https://{os.environ.get('DJANGO_HOST')}/v1/worker_event/{worker_id}/"
     headers = {
         "Authorization": f"Worker {worker_token}"
     }
@@ -48,10 +50,14 @@ async def listen_for_events(worker_id, worker_token):
                             print(f"Ping received. Sending pong...")
                             await respond_to_ping(worker_id, worker_token)
 
-                        elif data.get("type") == "task":
-                            task_name = data.get("task_name")
-                            run_task_by_name(task_name)
-                            print(f"Task received. Sending confirmation...")
+                        elif data.get("type") == "tool":
+                            tool_name = data.get("tool_name")
+                            run_task_by_name(tool_name)
+                            print(f"Tool request received. Sending confirmation...")
+
+                        elif data.get("type") == "websocket_open":
+                            print("Opening WebSocket connection...")
+                            await open_websocket_connection(worker_id, worker_token)
 
                         else:
                             print(f"Received message: {data}")
@@ -79,4 +85,5 @@ async def start_worker(worker_id, worker_token):
 if __name__ == "__main__":
     worker_id = os.environ.get("WORKER_ID")
     worker_token = os.environ.get("WORKER_TOKEN")
+    # worker_token = "" 
     asyncio.run(start_worker(worker_id, worker_token))
