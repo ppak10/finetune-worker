@@ -9,7 +9,7 @@ from app.client.stream.utils import *
 from app.client.stream.ws import open_websocket_connection
 
 async def respond_to_ping(worker_id, worker_token):
-    url = f"https://host.docker.internal:8000/v1/worker_event/{worker_id}/ping/"
+    url = f"https://{os.environ.get('DJANGO_HOST')}/v1/worker_event/{worker_id}/ping/"
     headers = {
         "Authorization": f"Worker {worker_token}",
         "Content-Type": "application/json",
@@ -25,7 +25,7 @@ async def respond_to_ping(worker_id, worker_token):
 
 
 async def listen_for_events(worker_id, worker_token):
-    url = f"https://host.docker.internal:8000/v1/worker_event/{worker_id}/"
+    url = f"https://{os.environ.get('DJANGO_HOST')}/v1/worker_event/{worker_id}/"
     headers = {
         "Authorization": f"Worker {worker_token}"
     }

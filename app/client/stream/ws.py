@@ -1,9 +1,11 @@
 import websockets
 import json
 import ssl
+import os
 
 async def open_websocket_connection(worker_instance_id, worker_token):
-    uri = f"wss://host.docker.internal:8000/ws/worker_websocket/{worker_instance_id}/"
+    # uri = f"wss://host.docker.internal:8000/ws/worker_websocket/{worker_instance_id}/"
+    uri = f"wss://{os.environ.get('DJANGO_HOST')}/ws/worker_websocket/{worker_instance_id}/"
     headers = {
         "Authorization": f"Worker {worker_token}"
     }
