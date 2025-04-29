@@ -7,6 +7,7 @@ from watchdog.events import FileSystemEventHandler
 WATCH_PATHS = ["app/"]
 IGNORED_DIRS = ["__pycache__", ".venv", "tests", "migrations"]
 
+
 class RestartOnChangeHandler(FileSystemEventHandler):
     def __init__(self, restart_callback, debounce_time=1.0):
         super().__init__()
@@ -15,9 +16,8 @@ class RestartOnChangeHandler(FileSystemEventHandler):
         self.last_modified = 0
 
     def on_any_event(self, event):
-        if (
-            event.src_path.endswith(".py")
-            and not any(ignored in event.src_path for ignored in IGNORED_DIRS)
+        if event.src_path.endswith(".py") and not any(
+            ignored in event.src_path for ignored in IGNORED_DIRS
         ):
             now = time.time()
             if now - self.last_modified > self.debounce_time:
@@ -25,15 +25,18 @@ class RestartOnChangeHandler(FileSystemEventHandler):
                 self.last_modified = now
                 self.restart_callback()
 
+
 def start_worker_subprocess():
     return subprocess.Popen(
         [sys.executable, "-m", "app.client.stream.sse"],
     )
 
+
 def start_celery_worker():
-    return subprocess.Popen([
-        "celery", "-A", "app.client.celery.app.celery", "worker", "--loglevel=info"
-    ])
+    return subprocess.Popen(
+        ["celery", "-A", "app.client.celery.app.celery", "worker", "--loglevel=info"]
+    )
+
 
 def main():
     print("[startup] Starting Celery worker...")
@@ -68,6 +71,6 @@ def main():
     observer.join()
     print("[shutdown] Done.")
 
+
 if __name__ == "__main__":
     main()
-

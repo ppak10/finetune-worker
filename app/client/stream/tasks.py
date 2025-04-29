@@ -9,10 +9,9 @@ tools_module = importlib.import_module("app.tools")
 
 # Collect all Celery tasks
 celery_tasks = {
-    name: obj
-    for name, obj in vars(tools_module).items()
-    if isinstance(obj, Task)
+    name: obj for name, obj in vars(tools_module).items() if isinstance(obj, Task)
 }
+
 
 # Get argument info (name, type, default) from a function
 def get_task_args_and_kwargs(task_fn):
@@ -25,18 +24,22 @@ def get_task_args_and_kwargs(task_fn):
         default = param.default if param.default != inspect.Parameter.empty else None
         required = param.default == inspect.Parameter.empty
 
-        arg_info.append({
-            "name": name,
-            "type": getattr(arg_type, "__name__", str(arg_type)),
-            "default": default,
-            "required": required,
-        })
+        arg_info.append(
+            {
+                "name": name,
+                "type": getattr(arg_type, "__name__", str(arg_type)),
+                "default": default,
+                "required": required,
+            }
+        )
 
     return arg_info, type_hints.get("return", None)
+
 
 # Get docstring of a function
 def get_task_docstring(task_fn):
     return task_fn.__doc__
+
 
 # Print tasks and their metadata
 print("📋 Discovered Celery tasks and their metadata:\n")
@@ -45,18 +48,23 @@ for name, task in celery_tasks.items():
     docstring = get_task_docstring(task.run)
 
     print(f"🔧 Tool: {name}")
-    
+
     if docstring:
         print(f"📘 Description: {docstring.strip()}")
-    
+
     print("📥 Arguments:")
     for arg in args_info:
-        default_display = f"default={repr(arg['default'])}" if not arg['required'] else "required"
+        default_display = (
+            f"default={repr(arg['default'])}" if not arg["required"] else "required"
+        )
         print(f"  - {arg['name']} ({arg['type']}): {default_display}")
 
-    return_display = getattr(return_type, "__name__", str(return_type)) if return_type else "None"
+    return_display = (
+        getattr(return_type, "__name__", str(return_type)) if return_type else "None"
+    )
     print(f"📤 Returns: {return_display}")
     print("-" * 60)
+
 
 # Function to run a task by name
 def run_task_by_name(task_name: str, *args, **kwargs):

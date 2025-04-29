@@ -8,6 +8,7 @@ from app.client.stream.tasks import run_task_by_name
 from app.client.stream.utils import *
 from app.client.stream.ws import open_websocket_connection
 
+
 async def respond_to_ping(worker_id, worker_token):
     url = f"https://{os.environ.get('DJANGO_HOST')}/v1/worker_event/{worker_id}/ping/"
     headers = {
@@ -17,7 +18,9 @@ async def respond_to_ping(worker_id, worker_token):
 
     async with aiohttp.ClientSession(headers=headers) as session:
         try:
-            async with session.post(url, ssl=False, json={"worker_id": worker_id}) as resp:
+            async with session.post(
+                url, ssl=False, json={"worker_id": worker_id}
+            ) as resp:
                 if resp.status != 200:
                     print(f"Failed to respond to ping. Status: {resp.status}")
         except Exception as e:
@@ -26,15 +29,13 @@ async def respond_to_ping(worker_id, worker_token):
 
 async def listen_for_events(worker_id, worker_token):
     url = f"https://{os.environ.get('DJANGO_HOST')}/v1/worker_event/{worker_id}/"
-    headers = {
-        "Authorization": f"Worker {worker_token}"
-    }
+    headers = {"Authorization": f"Worker {worker_token}"}
 
     timeout = aiohttp.ClientTimeout(sock_read=None)  # Disable read timeout
     async with aiohttp.ClientSession(timeout=timeout, headers=headers) as session:
         async with session.get(url, ssl=False) as response:
             print(f"Connected as {worker_id}, status: {response.status}")
-            
+
             if response.status != 200:
                 error_details = await response.text()
                 print(f"Error details: {error_details}")
@@ -66,9 +67,10 @@ async def listen_for_events(worker_id, worker_token):
                 elif decoded.startswith(":"):
                     print(f"Heartbeat")
 
+
 async def start_worker(worker_id, worker_token):
     retry_delay = 1  # Start with 1 second
-    max_delay = 60   # Cap the backoff
+    max_delay = 60  # Cap the backoff
 
     while True:
         try:
@@ -78,12 +80,13 @@ async def start_worker(worker_id, worker_token):
             print(f"HTTP error occurred: {e.status} - {e.message}")
         except Exception as e:
             print(f"An unexpected error occurred: {str(e)}")
-        
+
         await asyncio.sleep(retry_delay)
         retry_delay = min(retry_delay * 2, max_delay)  # Exponential backoff
+
 
 if __name__ == "__main__":
     worker_id = os.environ.get("WORKER_ID")
     worker_token = os.environ.get("WORKER_TOKEN")
-    # worker_token = "" 
+    # worker_token = ""
     asyncio.run(start_worker(worker_id, worker_token))

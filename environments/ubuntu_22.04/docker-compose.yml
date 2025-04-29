@@ -7,6 +7,7 @@ services:
       - .env
     environment:
       - ENVIRONMENT=development
+      - NVIDIA_VISIBLE_DEVICES=all
     volumes:
       - ../../app:/home/app
       - ../../services/ubuntu_22.04:/home/ubuntu
@@ -14,6 +15,13 @@ services:
       - venv:/home/app/venv
     networks:
       - worker-net
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    runtime: nvidia
 
     tty: true
   
