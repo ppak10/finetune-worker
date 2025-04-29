@@ -172,3 +172,8 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+app/*
+!app/client/
+!app/__init__.py
+!app/tools.py

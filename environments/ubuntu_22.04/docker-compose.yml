@@ -11,7 +11,7 @@ services:
       - ../../app:/home/app
       - ../../services/ubuntu_22.04:/home/ubuntu
 
-      # - venv:/home/venv
+      - venv:/home/app/venv
     networks:
       - worker-net
 
@@ -40,7 +40,7 @@ services:
     #   - "host.docker.internal:host-gateway"
 
 volumes:
-  # venv:
+  venv:
 
   # devtools
   redisinsight:

@@ -34,11 +34,16 @@ USER finetune-worker
 # Python Initialization #
 #########################
 
-# Create Virutal Environment for both api and app in home directory
-RUN python3.10 -m venv venv
+# Create Virutal Environment for running client in home directory
+RUN python3.10 -m venv app/venv
 
 # Install requirements for client
-RUN . venv/bin/activate && pip install aiohttp celery redis watchdog websockets
+RUN . app/venv/bin/activate && pip install aiohttp celery redis watchdog websockets
+
+###########################
+# Development Environment #
+###########################
+COPY ./.devcontainer.json ./app/.devcontainer.json
 
 ##############
 # Entrypoint #

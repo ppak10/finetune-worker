@@ -1,0 +1,17 @@
+{
+  "name": "finetune-worker",
+  "service": "ubuntu_22.04",
+  "workspaceFolder": "/home/app",
+  "dockerComposeFile": "../environments/ubuntu_22.04/docker-compose.yml",
+  "shutdownAction": "stopCompose",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/home/app/venv/bin/python"
+      }
+    }
+  }
+}
