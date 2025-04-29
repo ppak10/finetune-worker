@@ -17,6 +17,12 @@ RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt update
 RUN apt install -y python3.10 python3.10-venv python3-pip
 
+###########################
+# Entrypoint Dependencies #
+###########################
+
+RUN apt install -y screen
+
 ###############
 # Worker User #
 ###############
