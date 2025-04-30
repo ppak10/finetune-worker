@@ -5,8 +5,7 @@ import os
 
 
 async def open_websocket_connection(worker_instance_id, worker_token):
-    # uri = f"wss://host.docker.internal:8000/ws/worker_websocket/{worker_instance_id}/"
-    uri = f"wss://{os.environ.get('DJANGO_HOST')}/ws/worker_instance/{worker_instance_id}/"
+    uri = f"wss://{os.environ.get('DJANGO_HOST')}/ws/worker/{worker_instance_id}/machine/"
     headers = {"Authorization": f"Worker {worker_token}"}
 
     ssl_context = ssl.create_default_context()

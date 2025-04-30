@@ -9,8 +9,8 @@ from app.client.stream.utils import *
 from app.client.stream.ws import open_websocket_connection
 
 
-async def respond_to_ping(worker_id, worker_token):
-    url = f"https://{os.environ.get('DJANGO_HOST')}/v1/worker_event/{worker_id}/ping/"
+async def respond_to_ping(worker_instance_id, worker_token):
+    url = f"https://{os.environ.get('DJANGO_HOST')}/v1/worker/{worker_instance_id}/pong/"
     headers = {
         "Authorization": f"Worker {worker_token}",
         "Content-Type": "application/json",
@@ -19,7 +19,7 @@ async def respond_to_ping(worker_id, worker_token):
     async with aiohttp.ClientSession(headers=headers) as session:
         try:
             async with session.post(
-                url, ssl=False, json={"worker_id": worker_id}
+                url, ssl=False, json={"worker_instance_id": worker_instance_id}
             ) as resp:
                 if resp.status != 200:
                     print(f"Failed to respond to ping. Status: {resp.status}")
@@ -27,14 +27,14 @@ async def respond_to_ping(worker_id, worker_token):
             print(f"Ping response error: {e}")
 
 
-async def listen_for_events(worker_id, worker_token):
-    url = f"https://{os.environ.get('DJANGO_HOST')}/v1/worker_event/{worker_id}/"
+async def listen_for_events(worker_instance_id, worker_token):
+    url = f"https://{os.environ.get('DJANGO_HOST')}/v1/worker/{worker_instance_id}/sse/"
     headers = {"Authorization": f"Worker {worker_token}"}
 
     timeout = aiohttp.ClientTimeout(sock_read=None)  # Disable read timeout
     async with aiohttp.ClientSession(timeout=timeout, headers=headers) as session:
         async with session.get(url, ssl=False) as response:
-            print(f"Connected as {worker_id}, status: {response.status}")
+            print(f"Connected as {worker_instance_id}, status: {response.status}")
 
             if response.status != 200:
                 error_details = await response.text()
@@ -49,7 +49,7 @@ async def listen_for_events(worker_id, worker_token):
                         data = json.loads(message)
                         if data.get("type") == "ping":
                             print(f"Ping received. Sending pong...")
-                            await respond_to_ping(worker_id, worker_token)
+                            await respond_to_ping(worker_instance_id, worker_token)
 
                         elif data.get("type") == "tool":
                             tool_name = data.get("tool_name")
@@ -58,7 +58,7 @@ async def listen_for_events(worker_id, worker_token):
 
                         elif data.get("type") == "websocket_open":
                             print("Opening WebSocket connection...")
-                            await open_websocket_connection(worker_id, worker_token)
+                            await open_websocket_connection(worker_instance_id, worker_token)
 
                         else:
                             print(f"Received message: {data}")
@@ -68,13 +68,13 @@ async def listen_for_events(worker_id, worker_token):
                     print(f"Heartbeat")
 
 
-async def start_worker(worker_id, worker_token):
+async def start_worker(worker_instance_id, worker_token):
     retry_delay = 1  # Start with 1 second
     max_delay = 60  # Cap the backoff
 
     while True:
         try:
-            await listen_for_events(worker_id, worker_token)
+            await listen_for_events(worker_instance_id, worker_token)
             print(f"Disconnected from event stream. Retrying in {retry_delay}s...")
         except aiohttp.ClientResponseError as e:
             print(f"HTTP error occurred: {e.status} - {e.message}")
@@ -86,7 +86,7 @@ async def start_worker(worker_id, worker_token):
 
 
 if __name__ == "__main__":
-    worker_id = os.environ.get("WORKER_ID")
+    worker_instance_id = os.environ.get("WORKER_ID")
     worker_token = os.environ.get("WORKER_TOKEN")
     # worker_token = ""
-    asyncio.run(start_worker(worker_id, worker_token))
+    asyncio.run(start_worker(worker_instance_id, worker_token))
