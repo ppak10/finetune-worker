@@ -5,7 +5,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 WATCH_PATHS = ["app/"]
-IGNORED_DIRS = ["__pycache__", ".venv", "tests", "migrations"]
+IGNORED_DIRS = ["__pycache__", "venv", "tests", "migrations"]
 
 
 class RestartOnChangeHandler(FileSystemEventHandler):

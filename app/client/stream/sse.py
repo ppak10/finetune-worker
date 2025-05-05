@@ -6,7 +6,7 @@ import os
 # Applies prepended print statement.
 from app.client.stream.tasks import run_task_by_name
 from app.client.stream.utils import *
-from app.client.stream.ws import open_websocket_connection
+from app.client.stream.ws import open_websocket_connection, open_websocket_connection_with_conversation_response
 
 
 async def respond_to_ping(worker_instance_id, worker_token):
@@ -59,6 +59,12 @@ async def listen_for_events(worker_instance_id, worker_token):
                         elif data.get("type") == "websocket_open":
                             print("Opening WebSocket connection...")
                             await open_websocket_connection(worker_instance_id, worker_token)
+
+                        elif data.get("type") == "start_conversation":
+                            content = data.get("data")
+                            print(f"content: {content}")
+                            print("Opening WebSocket connection for conversation...")
+                            await open_websocket_connection_with_conversation_response(worker_instance_id, worker_token, content)
 
                         else:
                             print(f"Received message: {data}")

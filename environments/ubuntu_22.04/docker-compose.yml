@@ -16,12 +16,12 @@ services:
     networks:
       - worker-net
 
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - capabilities: [gpu]
-    runtime: nvidia
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - capabilities: [gpu]
+    # runtime: nvidia
 
     tty: true
   
