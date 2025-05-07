@@ -91,7 +91,10 @@ import os
 
 async def open_conversation_websocket(conversation_id, content=None):
     uri = f"wss://{os.environ.get('DJANGO_HOST')}/ws/conversation/{conversation_id}/machine/"
-    headers = {"Authorization": f"Worker {os.environ.get('WORKER_TOKEN')}"}
+    headers = {
+        "Authorization": f"Worker {os.environ.get('WORKER_TOKEN')}",
+        "X-Worker-ID": os.environ.get("WORKER_ID"),
+    }
 
     # Set up SSL context for WebSocket connection
     ssl_context = ssl.create_default_context()
@@ -141,7 +144,7 @@ async def open_conversation_websocket(conversation_id, content=None):
                         break
 
                     elif data.get("type") == "prompt_query":
-                        content = data.get("content")
+                        content = data["data"]["content"]
                         print(f"Prompt query message received: {content}")
                         await respond_to_prompt(content)
 
