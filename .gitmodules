@@ -1,0 +1,3 @@
+[submodule "app/Worker"]
+	path = app/Worker
+	url = git@github.com:finetune-build/Worker.git

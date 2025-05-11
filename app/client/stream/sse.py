@@ -6,7 +6,7 @@ import os
 # Applies prepended print statement.
 from app.client.stream.tasks import run_task_by_name
 from app.client.stream.utils import *
-from app.client.stream.ws import open_websocket_connection, open_conversation_websocket_thread
+from app.client.stream.ws import open_websocket_connection, start_conversation_thread, shutdown_conversation_thread
 
 
 async def respond_to_ping(worker_instance_id, worker_token):
@@ -64,8 +64,15 @@ async def listen_for_events(worker_instance_id, worker_token):
                             content = data["data"]["content"]
                             conversation_id = data["data"]["conversation_id"]
                             print("Opening WebSocket connection for conversation in a thread...")
-                            open_conversation_websocket_thread(conversation_id, content)
+                            start_conversation_thread(conversation_id, content)
 
+                        # Not sure if necessary to be sent with SSE as this can
+                        # be done inside websocket.
+                        # Will keep around just in case.
+                        elif data.get("type") == "close_conversation_websocket":
+                            conversation_id = data["data"]["conversation_id"]
+                            print("Closing WebSocket connection for conversation in a thread...")
+                            shutdown_conversation_thread(conversation_id)
 
                         else:
                             print(f"Received message: {data}")

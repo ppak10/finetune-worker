@@ -177,3 +177,4 @@ app/*
 !app/client/
 !app/__init__.py
 !app/tools.py
+!app/Worker
