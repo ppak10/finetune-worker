@@ -178,3 +178,4 @@ app/*
 !app/__init__.py
 !app/tools.py
 !app/Worker
+!app/.devcontainer.json
